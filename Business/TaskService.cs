@@ -33,7 +33,7 @@ namespace ACOS_be.Business
             {
                 Title = task.Title,
                 Description = task.Description,
-                User = forUser
+                //User = forUser
             });
 
             context.SaveChanges();
@@ -87,7 +87,7 @@ namespace ACOS_be.Business
                 Id = currentTask.Id,
                 Title = task.Title,
                 Description = task.Description,
-                User = new User { Id = 42 }
+                //User = new User { Id = 42 }
             };
 
             context.Update(updatedTask);
@@ -102,7 +102,7 @@ namespace ACOS_be.Business
                 Id = task.Id,
                 Title = task.Title,
                 Description = task.Description,
-                UserId = task.User.Id
+                //UserId = task.User.Id
             };
         }
     }
