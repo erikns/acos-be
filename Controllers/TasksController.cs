@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ACOS_be.Business;
-using ACOS_be.Messages;
+using ACOS_be.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ACOS_be.Controllers
@@ -39,14 +39,14 @@ namespace ACOS_be.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateNewTask([FromBody]TaskMessage task)
+        public IActionResult CreateNewTask([FromBody]TaskModel task)
         {
             var createdTask = taskService.Create(task);
             return Ok(createdTask);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateTask(int id, [FromBody]TaskMessage task)
+        public IActionResult UpdateTask(int id, [FromBody]TaskModel task)
         {
             if (taskService.Exists(id))
             {

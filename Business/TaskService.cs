@@ -1,18 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using ACOS_be.Data;
-using ACOS_be.Messages;
+using ACOS_be.Entities;
 using ACOS_be.Models;
-//using ACOS_be.Models;
 
 namespace ACOS_be.Business
 {
     public interface TaskService
     {
-        TaskMessage Create(TaskMessage task);
-        TaskMessage Find(int id);
-        IEnumerable<TaskMessage> FindAll();
-        TaskMessage Update(int id, TaskMessage updatedTask);
+        TaskModel Create(TaskModel task);
+        TaskModel Find(int id);
+        IEnumerable<TaskModel> FindAll();
+        TaskModel Update(int id, TaskModel updatedTask);
         bool Delete(int id);
         bool Exists(int id);
     }
@@ -26,7 +25,7 @@ namespace ACOS_be.Business
             this.context = context;
         }
         
-        public TaskMessage Create(TaskMessage task)
+        public TaskModel Create(TaskModel task)
         {
             var forUser = new User { Id = 42 };
             var newTask = context.Add(new Task
@@ -37,7 +36,7 @@ namespace ACOS_be.Business
             });
 
             context.SaveChanges();
-            return MapTaskToMessage(newTask.Entity);
+            return MapTaskToModel(newTask.Entity);
         }
 
         public bool Delete(int id)
@@ -61,12 +60,12 @@ namespace ACOS_be.Business
             return task != null;
         }
 
-        public TaskMessage Find(int id)
+        public TaskModel Find(int id)
         {
             var task = context.Tasks.Find(id);
             if (task != null)
             {
-                return MapTaskToMessage(task);
+                return MapTaskToModel(task);
             }
             else
             {
@@ -74,30 +73,25 @@ namespace ACOS_be.Business
             }
         }
 
-        public IEnumerable<TaskMessage> FindAll()
+        public IEnumerable<TaskModel> FindAll()
         {
-            return context.Tasks.Select(MapTaskToMessage);
+            return context.Tasks.Select(MapTaskToModel);
         }
 
-        public TaskMessage Update(int id, TaskMessage task)
+        public TaskModel Update(int id, TaskModel task)
         {
             var currentTask = context.Tasks.Find(id);
-            var updatedTask = new Task
-            {
-                Id = currentTask.Id,
-                Title = task.Title,
-                Description = task.Description,
-                //User = new User { Id = 42 }
-            };
+            currentTask.Title = task.Title;
+            currentTask.Description = task.Description;
 
-            context.Update(updatedTask);
+            context.Update(currentTask);
             context.SaveChanges();
-            return MapTaskToMessage(updatedTask);
+            return MapTaskToModel(currentTask);
         }
 
-        private TaskMessage MapTaskToMessage(Task task)
+        private TaskModel MapTaskToModel(Task task)
         {
-            return new TaskMessage
+            return new TaskModel
             {
                 Id = task.Id,
                 Title = task.Title,

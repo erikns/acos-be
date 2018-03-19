@@ -1,6 +1,6 @@
-namespace ACOS_be.Messages
+namespace ACOS_be.Models
 {
-    public class TaskMessage
+    public class TaskModel
     {
         public int Id { get; set; }
         public string Title { get; set; }

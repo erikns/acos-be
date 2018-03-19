@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ACOS_be.Models
+namespace ACOS_be.Entities
 {
     public class User
     {

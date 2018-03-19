@@ -1,3 +1,4 @@
+using ACOS_be.Entities;
 using ACOS_be.Models;
 using Microsoft.EntityFrameworkCore;
 
