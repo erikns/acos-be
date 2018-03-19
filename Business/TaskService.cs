@@ -36,6 +36,7 @@ namespace ACOS_be.Business
                 User = forUser
             });
 
+            context.SaveChanges();
             return MapTaskToMessage(newTask.Entity);
         }
 
@@ -45,6 +46,7 @@ namespace ACOS_be.Business
             if (task != null)
             {
                 context.Remove(task);
+                context.SaveChanges();
                 return true;
             }
             else
@@ -89,6 +91,7 @@ namespace ACOS_be.Business
             };
 
             context.Update(updatedTask);
+            context.SaveChanges();
             return MapTaskToMessage(updatedTask);
         }
 
