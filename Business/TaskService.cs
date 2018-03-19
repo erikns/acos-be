@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using ACOS_be.Messages;
+using ACOS_be.Models;
 //using ACOS_be.Models;
 
 namespace ACOS_be.Business
@@ -9,41 +11,86 @@ namespace ACOS_be.Business
         TaskMessage Create(TaskMessage task);
         TaskMessage Find(int id);
         IEnumerable<TaskMessage> FindAll();
-        TaskMessage Update(TaskMessage updatedTask);
-        bool Delete(TaskMessage task);
+        TaskMessage Update(int id, TaskMessage updatedTask);
+        bool Delete(int id);
         bool Exists(int id);
     }
 
     public class TaskServiceImpl : TaskService
     {
+        private static List<Task> tasks = new List<Task>();
+        private static int nextId = 0;
+        
         public TaskMessage Create(TaskMessage task)
         {
-            throw new System.NotImplementedException();
+            var forUser = new User { Id = 42 };
+            var newTask = new Task
+            {
+                Id = ++nextId,
+                Title = task.Title,
+                Description = task.Description,
+                User = forUser
+            };
+
+            tasks.Add(newTask);
+            return MapTaskToMessage(newTask);
         }
 
-        public bool Delete(TaskMessage task)
+        public bool Delete(int id)
         {
-            throw new System.NotImplementedException();
+            var task = tasks.Find(t => t.Id == id);
+            tasks.Remove(task);
+            return true;
         }
 
         public bool Exists(int id)
         {
-            throw new System.NotImplementedException();
+            return tasks.Find(t => t.Id == id) != null;
         }
 
         public TaskMessage Find(int id)
         {
-            throw new System.NotImplementedException();
+            var task = tasks.Find(t => t.Id == id);
+            if (task != null)
+            {
+                return MapTaskToMessage(task);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public IEnumerable<TaskMessage> FindAll()
         {
-            throw new System.NotImplementedException();
+            return tasks.Select(MapTaskToMessage);
         }
 
-        public TaskMessage Update(TaskMessage updatedTask)
+        public TaskMessage Update(int id, TaskMessage task)
         {
-            throw new System.NotImplementedException();
+            var currentTask = tasks.Find(t => t.Id == id);
+            var updatedTask = new Task
+            {
+                Id = currentTask.Id,
+                Title = task.Title,
+                Description = task.Description,
+                User = new User { Id = 42 }
+            };
+
+            tasks.Remove(currentTask);
+            tasks.Add(updatedTask);
+            return MapTaskToMessage(updatedTask);
+        }
+
+        private TaskMessage MapTaskToMessage(Task task)
+        {
+            return new TaskMessage
+            {
+                Id = task.Id,
+                Title = task.Title,
+                Description = task.Description,
+                UserId = task.User.Id
+            };
         }
     }
 }

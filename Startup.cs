@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ACOS_be.Business;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +25,7 @@ namespace ACOS_be
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSingleton(typeof(TaskService), typeof(TaskServiceImpl));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

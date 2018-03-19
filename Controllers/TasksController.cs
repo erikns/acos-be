@@ -42,7 +42,7 @@ namespace ACOS_be.Controllers
         {
             if (taskService.Exists(id))
             {
-                var updatedTask = taskService.Update(task);
+                var updatedTask = taskService.Update(id, task);
                 return Ok(updatedTask);
             }
             else
@@ -56,8 +56,7 @@ namespace ACOS_be.Controllers
         {
             if (taskService.Exists(id))
             {
-                var task = taskService.Find(id);
-                if (taskService.Delete(task))
+                if (taskService.Delete(id))
                 {
                     return NoContent();
                 }
