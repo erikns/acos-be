@@ -27,7 +27,7 @@ namespace ACOS_be.Controllers
         [HttpGet("{id}")]
         public IActionResult GetTaskById(int id)
         {
-            var task = Ok(taskService.Find(id));
+            var task = taskService.Find(id);
             if (task != null)
             {
                 return Ok(task);
