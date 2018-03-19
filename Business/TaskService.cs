@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ACOS_be.Data;
 using ACOS_be.Messages;
 using ACOS_be.Models;
 //using ACOS_be.Models;
@@ -18,39 +19,49 @@ namespace ACOS_be.Business
 
     public class TaskServiceImpl : TaskService
     {
-        private static List<Task> tasks = new List<Task>();
-        private static int nextId = 0;
+        private ApplicationContext context;
+
+        public TaskServiceImpl(ApplicationContext context)
+        {
+            this.context = context;
+        }
         
         public TaskMessage Create(TaskMessage task)
         {
             var forUser = new User { Id = 42 };
-            var newTask = new Task
+            var newTask = context.Add(new Task
             {
-                Id = ++nextId,
                 Title = task.Title,
                 Description = task.Description,
                 User = forUser
-            };
+            });
 
-            tasks.Add(newTask);
-            return MapTaskToMessage(newTask);
+            return MapTaskToMessage(newTask.Entity);
         }
 
         public bool Delete(int id)
         {
-            var task = tasks.Find(t => t.Id == id);
-            tasks.Remove(task);
-            return true;
+            var task = context.Tasks.Find(id);
+            if (task != null)
+            {
+                context.Remove(task);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public bool Exists(int id)
         {
-            return tasks.Find(t => t.Id == id) != null;
+            var task = context.Tasks.Find(id);
+            return task != null;
         }
 
         public TaskMessage Find(int id)
         {
-            var task = tasks.Find(t => t.Id == id);
+            var task = context.Tasks.Find(id);
             if (task != null)
             {
                 return MapTaskToMessage(task);
@@ -63,12 +74,12 @@ namespace ACOS_be.Business
 
         public IEnumerable<TaskMessage> FindAll()
         {
-            return tasks.Select(MapTaskToMessage);
+            return context.Tasks.Select(MapTaskToMessage);
         }
 
         public TaskMessage Update(int id, TaskMessage task)
         {
-            var currentTask = tasks.Find(t => t.Id == id);
+            var currentTask = context.Tasks.Find(id);
             var updatedTask = new Task
             {
                 Id = currentTask.Id,
@@ -77,8 +88,7 @@ namespace ACOS_be.Business
                 User = new User { Id = 42 }
             };
 
-            tasks.Remove(currentTask);
-            tasks.Add(updatedTask);
+            context.Update(updatedTask);
             return MapTaskToMessage(updatedTask);
         }
 

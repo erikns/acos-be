@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ACOS_be.Business;
+using ACOS_be.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,7 +27,9 @@ namespace ACOS_be
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSingleton(typeof(TaskService), typeof(TaskServiceImpl));
+            services.AddDbContext<ApplicationContext>(options =>
+                options.UseNpgsql("conn_string"));
+            services.AddTransient(typeof(TaskService), typeof(TaskServiceImpl));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
