@@ -28,7 +28,7 @@ namespace ACOS_be
         {
             services.AddMvc();
             services.AddDbContext<ApplicationContext>(options =>
-                options.UseNpgsql("conn_string"));
+                options.UseNpgsql("Server=localhost;Database=acos;Port=5432;Password=acos;Username=acos"));
             services.AddTransient(typeof(TaskService), typeof(TaskServiceImpl));
         }
 
