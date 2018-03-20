@@ -9,7 +9,7 @@ namespace ACOS_be.Business
 {
     public interface TaskService : Service<TaskModel, int>
     {
-        IEnumerable<TaskModel> FindByUserEmail(string userEmail);
+        IEnumerable<TaskCleanModel> FindByUserEmail(string userEmail);
     }
 
     public class TaskServiceImpl : TaskService
@@ -88,10 +88,10 @@ namespace ACOS_be.Business
             return repository.Tasks.Include(t => t.User).Select(MapTaskToModel);
         }
 
-        public IEnumerable<TaskModel> FindByUserEmail(string userEmail)
+        public IEnumerable<TaskCleanModel> FindByUserEmail(string userEmail)
         {
             var result = repository.Tasks.Include(t => t.User).Where(t => t.User.Email == userEmail);
-            return result.Select(MapTaskToModel);
+            return result.Select(MapTaskToCleanModel);
         }
 
         public TaskModel Update(int id, TaskModel task)
@@ -113,6 +113,16 @@ namespace ACOS_be.Business
                 Title = task.Title,
                 Description = task.Description,
                 UserEmail = task.User.Email
+            };
+        }
+
+        private TaskCleanModel MapTaskToCleanModel(Task task)
+        {
+            return new TaskCleanModel
+            {
+                Id = task.Id,
+                Title = task.Title,
+                Description = task.Description
             };
         }
     }

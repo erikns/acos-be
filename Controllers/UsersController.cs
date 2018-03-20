@@ -8,10 +8,13 @@ namespace ACOS_be.Controllers
     public class UsersController : Controller
     {
         private UserService userService;
+        private TaskService taskService;
 
-        public UsersController(UserService userService)
+        public UsersController(UserService userService,
+            TaskService taskService)
         {
             this.userService = userService;
+            this.taskService = taskService;
         }
 
         [HttpGet]
@@ -66,6 +69,15 @@ namespace ACOS_be.Controllers
             {
                 return NotFound();
             }
+        }
+
+        [HttpGet("{userId}/tasks")]
+        public IActionResult GetTasksForUser(int userId)
+        {
+            var user = userService.Find(userId);
+            if (user == null) return NotFound();
+            var tasks = taskService.FindByUserEmail(user.Email);
+            return Ok(tasks);
         }
     }
 }
