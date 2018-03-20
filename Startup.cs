@@ -31,6 +31,7 @@ namespace ACOS_be
                 options.UseNpgsql("Server=localhost;Database=acos;Port=5432;Password=acos;Username=acos"));
             services.AddTransient(typeof(TaskService), typeof(TaskServiceImpl));
             services.AddTransient(typeof(UserService), typeof(UserServiceImpl));
+            services.AddTransient(typeof(TaskTypeService), typeof(TaskTypeServiceImpl));
             services.AddTransient(typeof(Repository), typeof(ApplicationContext));
 
             services.AddTransient(typeof(EventsFactory), typeof(EventsFactoryImpl));
