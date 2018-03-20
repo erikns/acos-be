@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ACOS_be.Business;
 using ACOS_be.Data;
+using ACOS_be.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,7 @@ namespace ACOS_be
             // Bootstrap the modules
             var provider = services.BuildServiceProvider();
             var registry = provider.GetRequiredService<ModuleRegistry>();
+            registry.Register<UserNotificationModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
