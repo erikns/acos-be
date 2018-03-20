@@ -2,13 +2,13 @@ using System.Collections.Generic;
 
 namespace ACOS_be.Business
 {
-    public interface Service<T>
+    public interface Service<T, TKey>
     {
         T Create(T entity);
-        T Find(int id);
+        T Find(TKey id);
         IEnumerable<T> FindAll();
-        T Update(int id, T updated);
-        bool Delete(int id);
-        bool Exists(int id);
+        T Update(TKey id, T updated);
+        bool Delete(TKey id);
+        bool Exists(TKey id);
     }
 }

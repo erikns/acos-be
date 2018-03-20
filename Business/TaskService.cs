@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ACOS_be.Business
 {
-    public interface TaskService : Service<TaskModel>
+    public interface TaskService : Service<TaskModel, int>
     {
         IEnumerable<TaskModel> FindByUserEmail(string userEmail);
     }
