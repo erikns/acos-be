@@ -50,6 +50,7 @@ namespace ACOS_be
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(config => config.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseMvc();
         }
     }
