@@ -58,9 +58,10 @@ namespace ACOS_be.Business
 
         public TaskModel Find(int id)
         {
-            var task = context.Tasks.Include(t => t.User).Where(t => t.Id == id).Single();
-            if (task != null)
+            var result = context.Tasks.Include(t => t.User).Where(t => t.Id == id);
+            if (result.Count() == 1)
             {
+                var task = result.Single(); 
                 return MapTaskToModel(task);
             }
             else
