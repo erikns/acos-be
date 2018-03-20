@@ -19,8 +19,13 @@ namespace ACOS_be.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllTasks()
+        public IActionResult GetAllTasks([FromQuery] string userEmail = "")
         {
+            if (userEmail.Length > 0)
+            {
+                var results = taskService.FindByUserEmail(userEmail);
+                return Ok(results);
+            }
             return Ok(taskService.FindAll());
         }
 

@@ -3,17 +3,13 @@ using System.Linq;
 using ACOS_be.Data;
 using ACOS_be.Entities;
 using ACOS_be.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ACOS_be.Business
 {
-    public interface TaskService
+    public interface TaskService : Service<TaskModel>
     {
-        TaskModel Create(TaskModel task);
-        TaskModel Find(int id);
-        IEnumerable<TaskModel> FindAll();
-        TaskModel Update(int id, TaskModel updatedTask);
-        bool Delete(int id);
-        bool Exists(int id);
+        IEnumerable<TaskModel> FindByUserEmail(string userEmail);
     }
 
     public class TaskServiceImpl : TaskService
@@ -27,12 +23,12 @@ namespace ACOS_be.Business
         
         public TaskModel Create(TaskModel task)
         {
-            var forUser = new User { Id = 42 };
+            var forUser = context.Users.Single(u => u.Email == task.UserEmail);
             var newTask = context.Add(new Task
             {
                 Title = task.Title,
                 Description = task.Description,
-                //User = forUser
+                User = forUser
             });
 
             context.SaveChanges();
@@ -56,13 +52,13 @@ namespace ACOS_be.Business
 
         public bool Exists(int id)
         {
-            var task = context.Tasks.Find(id);
-            return task != null;
+            var task = context.Tasks.Include(t => t.User).Where(t => t.Id == id).Count();
+            return task > 0;
         }
 
         public TaskModel Find(int id)
         {
-            var task = context.Tasks.Find(id);
+            var task = context.Tasks.Include(t => t.User).Where(t => t.Id == id).Single();
             if (task != null)
             {
                 return MapTaskToModel(task);
@@ -75,12 +71,18 @@ namespace ACOS_be.Business
 
         public IEnumerable<TaskModel> FindAll()
         {
-            return context.Tasks.Select(MapTaskToModel);
+            return context.Tasks.Include(t => t.User).Select(MapTaskToModel);
+        }
+
+        public IEnumerable<TaskModel> FindByUserEmail(string userEmail)
+        {
+            var result = context.Tasks.Include(t => t.User).Where(t => t.User.Email == userEmail);
+            return result.Select(MapTaskToModel);
         }
 
         public TaskModel Update(int id, TaskModel task)
         {
-            var currentTask = context.Tasks.Find(id);
+            var currentTask = context.Tasks.Include(t => t.User).Where(t => t.Id == id).Single();
             currentTask.Title = task.Title;
             currentTask.Description = task.Description;
 
@@ -96,7 +98,7 @@ namespace ACOS_be.Business
                 Id = task.Id,
                 Title = task.Title,
                 Description = task.Description,
-                //UserId = task.User.Id
+                UserEmail = task.User.Email
             };
         }
     }
