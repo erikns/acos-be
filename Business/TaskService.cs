@@ -15,24 +15,35 @@ namespace ACOS_be.Business
     public class TaskServiceImpl : TaskService
     {
         private Repository repository;
+        private EventsFactory events;
 
-        public TaskServiceImpl(Repository repository)
+        public TaskServiceImpl(Repository repository, EventsFactory events)
         {
             this.repository = repository;
+            this.events = events;
         }
         
         public TaskModel Create(TaskModel task)
         {
             var forUserResult = repository.Users.Where(u => u.Email == task.UserEmail);
             if (forUserResult.Count() != 1) return null;
+            var forUser = forUserResult.Single();
             var newTask = repository.Add(new Task
             {
                 Title = task.Title,
                 Description = task.Description,
-                User = forUserResult.Single()
+                User = forUser
             });
 
             repository.SaveAll();
+
+            var args = new TaskAddedEventArgs
+            {
+                User = forUser,
+                Task = newTask
+            };
+            events.GetEvents().OnTaskAdded(args);
+
             return MapTaskToModel(newTask);
         }
 

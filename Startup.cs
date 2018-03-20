@@ -32,6 +32,13 @@ namespace ACOS_be
             services.AddTransient(typeof(TaskService), typeof(TaskServiceImpl));
             services.AddTransient(typeof(UserService), typeof(UserServiceImpl));
             services.AddTransient(typeof(Repository), typeof(ApplicationContext));
+
+            services.AddTransient(typeof(EventsFactory), typeof(EventsFactoryImpl));
+            services.AddTransient(typeof(ModuleRegistry));
+
+            // Bootstrap the modules
+            var provider = services.BuildServiceProvider();
+            var registry = provider.GetRequiredService<ModuleRegistry>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

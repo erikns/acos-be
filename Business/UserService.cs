@@ -13,10 +13,12 @@ namespace ACOS_be.Business
     public class UserServiceImpl : UserService
     {
         private Repository repository;
+        private EventsFactory events;
 
-        public UserServiceImpl(Repository repository)
+        public UserServiceImpl(Repository repository, EventsFactory events)
         {
             this.repository = repository;
+            this.events = events;
         }
 
         public UserModel Create(UserModel entity)
@@ -27,6 +29,12 @@ namespace ACOS_be.Business
             });
 
             repository.SaveAll();
+
+            events.GetEvents().OnUserAdded(new UserAddedEventArgs
+            {
+                User = newUser
+            });
+
             return MapUserToModel(newUser);
         }
 
