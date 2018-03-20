@@ -14,34 +14,36 @@ namespace ACOS_be.Business
 
     public class TaskServiceImpl : TaskService
     {
-        private ApplicationContext context;
+        private Repository repository;
 
-        public TaskServiceImpl(ApplicationContext context)
+        public TaskServiceImpl(Repository repository)
         {
-            this.context = context;
+            this.repository = repository;
         }
         
         public TaskModel Create(TaskModel task)
         {
-            var forUser = context.Users.Single(u => u.Email == task.UserEmail);
-            var newTask = context.Add(new Task
+            var forUserResult = repository.Users.Where(u => u.Email == task.UserEmail);
+            if (forUserResult.Count() != 1) return null;
+            var newTask = repository.Add(new Task
             {
                 Title = task.Title,
                 Description = task.Description,
-                User = forUser
+                User = forUserResult.Single()
             });
 
-            context.SaveChanges();
-            return MapTaskToModel(newTask.Entity);
+            repository.SaveAll();
+            return MapTaskToModel(newTask);
         }
 
         public bool Delete(int id)
         {
-            var task = context.Tasks.Find(id);
-            if (task != null)
+            var taskResult = repository.Tasks.Where(t => t.Id == id);
+            if (taskResult.Count() == 1)
             {
-                context.Remove(task);
-                context.SaveChanges();
+                var task = taskResult.Single();
+                repository.Remove(task);
+                repository.SaveAll();
                 return true;
             }
             else
@@ -52,13 +54,13 @@ namespace ACOS_be.Business
 
         public bool Exists(int id)
         {
-            var task = context.Tasks.Include(t => t.User).Where(t => t.Id == id).Count();
+            var task = repository.Tasks.Include(t => t.User).Where(t => t.Id == id).Count();
             return task > 0;
         }
 
         public TaskModel Find(int id)
         {
-            var result = context.Tasks.Include(t => t.User).Where(t => t.Id == id);
+            var result = repository.Tasks.Include(t => t.User).Where(t => t.Id == id);
             if (result.Count() == 1)
             {
                 var task = result.Single(); 
@@ -72,23 +74,23 @@ namespace ACOS_be.Business
 
         public IEnumerable<TaskModel> FindAll()
         {
-            return context.Tasks.Include(t => t.User).Select(MapTaskToModel);
+            return repository.Tasks.Include(t => t.User).Select(MapTaskToModel);
         }
 
         public IEnumerable<TaskModel> FindByUserEmail(string userEmail)
         {
-            var result = context.Tasks.Include(t => t.User).Where(t => t.User.Email == userEmail);
+            var result = repository.Tasks.Include(t => t.User).Where(t => t.User.Email == userEmail);
             return result.Select(MapTaskToModel);
         }
 
         public TaskModel Update(int id, TaskModel task)
         {
-            var currentTask = context.Tasks.Include(t => t.User).Where(t => t.Id == id).Single();
+            var currentTask = repository.Tasks.Include(t => t.User).Where(t => t.Id == id).Single();
             currentTask.Title = task.Title;
             currentTask.Description = task.Description;
 
-            context.Update(currentTask);
-            context.SaveChanges();
+            repository.Update(currentTask);
+            repository.SaveAll();
             return MapTaskToModel(currentTask);
         }
 

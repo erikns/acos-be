@@ -47,7 +47,8 @@ namespace ACOS_be.Controllers
         public IActionResult CreateNewTask([FromBody]TaskModel task)
         {
             var createdTask = taskService.Create(task);
-            return Ok(createdTask);
+            if (createdTask != null) return Ok(createdTask);
+            else return BadRequest();
         }
 
         [HttpPut("{id}")]

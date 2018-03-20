@@ -30,6 +30,7 @@ namespace ACOS_be
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseNpgsql("Server=localhost;Database=acos;Port=5432;Password=acos;Username=acos"));
             services.AddTransient(typeof(TaskService), typeof(TaskServiceImpl));
+            services.AddTransient(typeof(Repository), typeof(ApplicationContext));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
