@@ -9,6 +9,7 @@ namespace ACOS_be.Data
     {
         DbSet<Task> Tasks { get; set; }
         DbSet<User> Users { get; set; }
+        DbSet<TaskType> TaskTypes { get; set; }
         int SaveAll();
         TEntity Add<TEntity>(TEntity entity) where TEntity : class;
         void Remove<TEntity>(TEntity entity) where TEntity : class;
@@ -22,11 +23,13 @@ namespace ACOS_be.Data
 
         public DbSet<Task> Tasks { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<TaskType> TaskTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Task>().ToTable("Task");
             modelBuilder.Entity<User>().ToTable("User");
+            modelBuilder.Entity<TaskType>().ToTable("TaskType").HasAlternateKey(tt => tt.Name);
         }
 
         int Repository.SaveAll()

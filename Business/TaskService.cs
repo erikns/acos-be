@@ -28,11 +28,17 @@ namespace ACOS_be.Business
             var forUserResult = repository.Users.Where(u => u.Email == task.UserEmail);
             if (forUserResult.Count() != 1) return null;
             var forUser = forUserResult.Single();
+
+            var forTypeResult = repository.TaskTypes.Where(u => u.Name == task.TypeName);
+            if (forTypeResult.Count() != 1) return null;
+            var forType = forTypeResult.Single();
+
             var newTask = repository.Add(new Task
             {
                 Title = task.Title,
                 Description = task.Description,
-                User = forUser
+                User = forUser,
+                Type = forType
             });
 
             repository.SaveAll();
@@ -65,13 +71,13 @@ namespace ACOS_be.Business
 
         public bool Exists(int id)
         {
-            var task = repository.Tasks.Include(t => t.User).Where(t => t.Id == id).Count();
+            var task = repository.Tasks.Where(t => t.Id == id).Count();
             return task > 0;
         }
 
         public TaskModel Find(int id)
         {
-            var result = repository.Tasks.Include(t => t.User).Where(t => t.Id == id);
+            var result = repository.Tasks.Include(t => t.User).Include(t => t.Type).Where(t => t.Id == id);
             if (result.Count() == 1)
             {
                 var task = result.Single(); 
@@ -85,20 +91,30 @@ namespace ACOS_be.Business
 
         public IEnumerable<TaskModel> FindAll()
         {
-            return repository.Tasks.Include(t => t.User).Select(MapTaskToModel);
+            return repository.Tasks.Include(t => t.User).Include(t => t.Type).Select(MapTaskToModel);
         }
 
         public IEnumerable<TaskCleanModel> FindByUserEmail(string userEmail)
         {
-            var result = repository.Tasks.Include(t => t.User).Where(t => t.User.Email == userEmail);
+            var result = repository.Tasks.Include(t => t.User).Include(t => t.Type).Where(t => t.User.Email == userEmail);
             return result.Select(MapTaskToCleanModel);
         }
 
         public TaskModel Update(int id, TaskModel task)
         {
-            var currentTask = repository.Tasks.Include(t => t.User).Where(t => t.Id == id).Single();
+            var currentTask = repository.Tasks.Include(t => t.User).Include(t => t.Type).Where(t => t.Id == id).Single();
             currentTask.Title = task.Title;
             currentTask.Description = task.Description;
+
+            if (currentTask.Type.Name != task.TypeName)
+            {
+                var newTypeResult = repository.TaskTypes.Where(t => t.Name == task.TypeName);
+                if (newTypeResult.Count() == 1)
+                {
+                    var newType = newTypeResult.Single();
+                    currentTask.Type = newType;
+                }
+            }
 
             repository.Update(currentTask);
             repository.SaveAll();
@@ -112,7 +128,8 @@ namespace ACOS_be.Business
                 Id = task.Id,
                 Title = task.Title,
                 Description = task.Description,
-                UserEmail = task.User.Email
+                UserEmail = task.User.Email,
+                TypeName = task.Type.Name,
             };
         }
 
@@ -122,7 +139,8 @@ namespace ACOS_be.Business
             {
                 Id = task.Id,
                 Title = task.Title,
-                Description = task.Description
+                Description = task.Description,
+                TypeName = task.Type.Name,
             };
         }
     }

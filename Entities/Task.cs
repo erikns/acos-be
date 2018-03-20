@@ -9,5 +9,6 @@ namespace ACOS_be.Entities
         public string Title { get; set; }
         public string Description { get; set; }
         public User User { get; set; }
+        public TaskType Type { get; set; }
     }
 }
